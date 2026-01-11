@@ -1,0 +1,93 @@
+:root {
+    --bg-color: #2b0505;
+    /* Deep Renaissance Red */
+    --gold: #d4af37;
+    --pad-bg: #4a0a0a;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-color);
+    background-image: radial-gradient(circle, #4a0a0a 0%, #1a0202 100%);
+    color: var(--gold);
+    font-family: 'Palatino', 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1 {
+    margin-bottom: 40px;
+    font-weight: normal;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 2rem;
+    text-align: center;
+}
+
+/* Layout Settings */
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 90vw;
+    max-width: 450px;
+    /* Center the grid content */
+    justify-items: center;
+}
+
+.pad {
+    background: var(--pad-bg);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    /* Ensure they fill frequency but maintain aspect ratio */
+    max-width: 120px;
+    /* Cap size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Visibility hidden spacer that still takes up layout space */
+.spacer {
+    visibility: hidden;
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+.pad:active {
+    transform: scale(0.95);
+    background: var(--gold);
+    color: var(--bg-color);
+    box-shadow: 0 0 30px var(--gold);
+}
+
+.label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px black;
+    pointer-events: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 400px) {
+    .container {
+        gap: 15px;
+    }
+
+    .label {
+        font-size: 1rem;
+    }
+}
