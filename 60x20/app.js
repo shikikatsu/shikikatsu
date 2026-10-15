@@ -8,6 +8,7 @@ $('grid').style.setProperty('--rows',ROWS);
 $('grid').style.setProperty('--cols',COLS);
 // Number labels sit outside the painting area, so hit testing stays on the grid.
 for(const [id,count] of [['axis-top',COLS],['axis-bottom',COLS],['axis-left',ROWS],['axis-right',ROWS]]){
+ $(id).replaceChildren();
  for(let i=1;i<=count;i++){
   const label=document.createElement('span');label.textContent=i;$(id).append(label);
  }
