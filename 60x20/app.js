@@ -6,6 +6,13 @@ let pixels=Array(COLS*ROWS).fill(WHITE), selected=colors[settings.initialColor ?
 const $=id=>document.getElementById(id), cells=[];
 $('grid').style.setProperty('--rows',ROWS);
 $('grid').style.setProperty('--cols',COLS);
+// Number labels sit outside the painting area, so hit testing stays on the grid.
+for(const [id,count] of [['axis-top',COLS],['axis-bottom',COLS],['axis-left',ROWS],['axis-right',ROWS]]){
+ for(let i=1;i<=count;i++){
+  const label=document.createElement('span');label.textContent=i;$(id).append(label);
+ }
+}
+
 for(let y=0;y<ROWS;y++){
  const row=document.createElement('div');row.setAttribute('role','row');row.setAttribute('aria-rowindex',y+1);
  for(let x=0;x<COLS;x++){
@@ -50,9 +57,29 @@ function artwork(lines){
  if(lines){ctx.strokeStyle='#65756d';ctx.lineWidth=2;ctx.beginPath();for(let x=1;x<COLS;x++){ctx.moveTo(x*cellWidth,0);ctx.lineTo(x*cellWidth,1000);}for(let y=1;y<ROWS;y++){ctx.moveTo(0,y*cellHeight);ctx.lineTo(3000,y*cellHeight);}ctx.stroke();}
  ctx.strokeStyle='#273e34';ctx.lineWidth=4;ctx.strokeRect(2,2,2996,996);return canvas;
 }
+// JPEG keeps its 3000×1000 size; print keeps the artwork itself at 300×100 mm.
+function numberedArtwork(lines,forPrint=false){
+ const canvas=document.createElement('canvas');
+ canvas.width=forPrint?3100:3000;canvas.height=forPrint?1100:1000;
+ const ctx=canvas.getContext('2d');ctx.fillStyle=WHITE;ctx.fillRect(0,0,canvas.width,canvas.height);
+ const width=forPrint?3000:2700,height=width/3;
+ const left=(canvas.width-width)/2,top=(canvas.height-height)/2;
+ ctx.imageSmoothingEnabled=false;ctx.drawImage(artwork(lines),left,top,width,height);
+ ctx.fillStyle='#273e34';ctx.font=`600 ${forPrint?30:26}px Arial, sans-serif`;
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ for(let x=0;x<COLS;x++){
+  const center=left+(x+.5)*width/COLS;
+  ctx.fillText(x+1,center,top-25);ctx.fillText(x+1,center,top+height+25);
+ }
+ for(let y=0;y<ROWS;y++){
+  const center=top+(y+.5)*height/ROWS;
+  ctx.fillText(y+1,left-25,center);ctx.fillText(y+1,left+width+25,center);
+ }
+ return canvas;
+}
 $('save').onclick=()=>$('save-dialog').showModal();
-$('download').onclick=()=>{const lines=document.querySelector('input[name=lines]:checked').value==='yes';artwork(lines).toBlob(blob=>{if(!blob){$('announcement').textContent='ほぞんできませんでした。もういちどためしてね。';return;}const url=URL.createObjectURL(blob),a=document.createElement('a');const now=new Date(),date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;a.href=url;a.download=`へきがの下絵${settings.fileLabel || ''}_${date}_${lines?'方眼あり':'方眼なし'}.jpg`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);$('save-dialog').close();$('announcement').textContent='画像をほぞんしました。';},'image/jpeg',0.96);};
-function preparePrint(){$('print-image').src=artwork(true).toDataURL('image/png');}
+$('download').onclick=()=>{const lines=document.querySelector('input[name=lines]:checked').value==='yes';numberedArtwork(lines).toBlob(blob=>{if(!blob){$('announcement').textContent='ほぞんできませんでした。もういちどためしてね。';return;}const url=URL.createObjectURL(blob),a=document.createElement('a');const now=new Date(),date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;a.href=url;a.download=`へきがの下絵${settings.fileLabel || ''}_${date}_${lines?'方眼あり':'方眼なし'}.jpg`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);$('save-dialog').close();$('announcement').textContent='画像をほぞんしました。';},'image/jpeg',0.96);};
+function preparePrint(){$('print-image').src=numberedArtwork(true,true).toDataURL('image/png');}
 window.addEventListener('beforeprint',preparePrint);
 $('print').onclick=()=>$('print-dialog').showModal();$('do-print').onclick=async()=>{preparePrint();await $('print-image').decode();$('print-dialog').close();window.print();};
 updateMode();render();
