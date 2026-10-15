@@ -1,33 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vowel Sound - Rosicrucian</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>へきが ドットえメーカー</title><link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <div class="container">
-        <!-- Row 1 -->
-        <div class="pad" data-freq="293.66"><span class="label">OM</span></div>
-        <div class="pad" data-freq="440.00"><span class="label">RA</span></div>
-        <div class="pad" data-freq="440.00"><span class="label">MA</span></div>
-
-        <!-- Row 2 -->
-        <div class="spacer"></div>
-        <div class="pad" data-freq="659.26"><span class="label">KHEI</span></div>
-        <div class="pad" data-freq="369.99"><span class="label">THO</span></div>
-
-        <!-- Row 3 -->
-        <div class="spacer"></div>
-        <div class="pad" data-freq="523.25"><span class="label">MEH</span></div>
-        <div class="pad" data-freq="493.88"><span class="label">EHM</span></div>
-    </div>
-
-    <script src="app.js"></script>
-</body>
-
-</html>
+<header><span class="badge">みんなでつくる、学校のへきが</span><h1>へきが <span>ドットえメーカー</span></h1><p>①いろをえらぶ → ②マスをぬる → ③ほぞんする</p></header>
+<main>
+<section class="tools" aria-label="えをかくどうぐ">
+<div class="palette-heading"><h2>いろをえらぼう</h2><div id="mode" role="status" aria-live="polite"></div></div>
+<div id="palette" aria-label="いろパレット"></div>
+<div class="toolbar"><button id="eraser" aria-pressed="false">けしゴム</button><span class="separator"></span><button id="undo" disabled>↶ もどる</button><button id="redo" disabled>↷ すすむ</button><button id="clear" class="quiet">ぜんぶけす</button></div>
+</section>
+<section class="drawing" aria-label="さくひん">
+<div class="drawing-heading"><h2>きみのキャンバス</h2><span>よこ30マス × たて10マス</span></div>
+<div id="grid" role="grid" aria-label="へきがの下絵、10行30列" aria-rowcount="10" aria-colcount="30"></div>
+<div class="caption"><span>1マス ＝ かべの10cm角</span><span>かべの大きさ：よこ300cm × たて100cm</span></div>
+<p class="hint">クリックで1マス。おしたまま動かすと、しかくくまとめてぬれるよ。</p>
+</section>
+<section class="output"><div><h2>できたら、ほぞんしよう</h2><p>ほぞんした画像は、先生といっしょに見てみよう。</p></div><div class="output-actions"><button id="save" class="primary">↓ JPEGでほぞん</button><button id="print">B4でいんさつ</button></div></section>
+<p class="notice">このページをとじると、かいた絵はきえます。とじる前にほぞんしてね。</p>
+</main>
+<dialog id="save-dialog"><form method="dialog"><h2>JPEGでほぞん</h2><p>ほぞんする画像の方眼線をえらんでね。</p><label><input type="radio" name="lines" value="yes" checked> 方眼線あり</label><label><input type="radio" name="lines" value="no"> 方眼線なし</label><p class="small">よこ3000 × たて1000ピクセルでほぞんします。</p><div class="dialog-actions"><button value="cancel">やめる</button><button id="download" type="button" class="primary">ほぞんする</button></div></form></dialog>
+<dialog id="print-dialog"><form method="dialog"><h2>B4でいんさつ</h2><p>先生といっしょに、印刷の設定をたしかめよう。</p><ul><li>用紙：日本のB4（364mm × 257mm）</li><li>向き：横向き</li><li>倍率：100％（用紙に合わせない）</li><li>ヘッダーとフッター：なし</li></ul><p>下絵はよこ300mm × たて100mm。<br>1マスは10mm角、かべの1/10の大きさです。</p><p class="small">正しい大きさで印刷するときは、JPEGではなく、このボタンを使ってね。印刷後に定規でもたしかめてください。</p><div class="dialog-actions"><button value="cancel">やめる</button><button id="do-print" type="button" class="primary">いんさつへすすむ</button></div></form></dialog>
+<dialog id="clear-dialog"><form method="dialog"><h2>ぜんぶけしてもいい？</h2><p>すべてのマスを白にもどします。</p><div class="dialog-actions"><button value="cancel" autofocus>やめる</button><button id="do-clear" type="button">ぜんぶけす</button></div></form></dialog>
+<div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+<div id="print-sheet" aria-hidden="true"><img id="print-image" alt="へきがの下絵"></div>
+<script src="app.js"></script>
+</body></html>
