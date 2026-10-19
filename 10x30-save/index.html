@@ -20,6 +20,10 @@
 .file-tools h2{margin-bottom:12px}.file-tools p{font-size:14px;line-height:1.7;margin:12px 0 0}
 #file-status{font-size:14px;min-height:1.5em;color:#315a4b}#file-status.error{color:#a32626}
 .original-link{font-size:13px;color:#397569;display:inline-block;margin-top:12px}
+#select-tool[aria-pressed=true],#paste-area[aria-pressed=true]{background:#e1f0e9;border:2px solid #217363}
+#grid [role=gridcell].area-selected{outline:2px solid #235bdf;outline-offset:-2px;z-index:1}
+#grid [role=gridcell].paste-preview{outline:2px dashed #a45300;outline-offset:-2px;filter:brightness(.92)}
+#grid [role=gridcell].paste-invalid{outline-color:#d22b2b}
 #print-preview{width:100%;height:auto;border:1px solid #dce5e1;margin-top:12px}
 #print-legend{display:none}
 fieldset{border:1px solid #cbded2;border-radius:10px;margin:12px 0}fieldset label{font-size:16px}
@@ -47,8 +51,8 @@ fieldset{border:1px solid #cbded2;border-radius:10px;margin:12px 0}fieldset labe
 <section class="tools" aria-label="えをかくどうぐ">
 <div class="palette-heading"><h2>いろをえらぼう</h2><div id="mode" role="status" aria-live="polite"></div></div>
 <div id="palette" aria-label="いろパレット"></div>
-<div class="toolbar"><button id="eraser" aria-pressed="false">けしゴム</button><span class="separator"></span><button id="undo" disabled>↶ もどる</button><button id="redo" disabled>↷ すすむ</button><button id="clear" class="quiet">ぜんぶけす</button></div>
-</section>
+<div class="toolbar"><button id="eraser" aria-pressed="false">けしゴム</button><span class="separator"></span><button id="undo" disabled>↶ もどる</button><button id="redo" disabled>↷ すすむ</button><button id="select-tool" aria-pressed="false">範囲をえらぶ</button><button id="copy-area" disabled>コピー</button><button id="paste-area" disabled aria-pressed="false">はりつけ</button><button id="paint-tool">ぬるにもどる</button><button id="clear" class="quiet">ぜんぶけす</button></div>
+<p id="copy-help" class="hint" role="status" aria-live="polite">模様をコピー：範囲をえらぶ → ドラッグ → コピー → はりつけ。白いマスも一緒にコピーします。</p></section>
 <section class="drawing" aria-label="さくひん">
 <div class="drawing-heading"><h2>きみのキャンバス</h2><span>よこ30マス × たて10マス</span></div>
 <div id="numbered-grid">
@@ -86,6 +90,7 @@ const colors=[legacyColors[6],legacyColors[5],legacyColors[4],legacyColors[15],l
 const extraColors=legacyColors.filter(c=>c[1]!==WHITE&&!colors.some(n=>n[1]===c[1]));
 const knownColors=colors.concat(extraColors);
 let pixels=Array(COLS*ROWS).fill(WHITE), selected=colors[2], erasing=false, history=[], future=[], drag=null;
+let tool='paint',selection=null,clipboard=null,pasteAt=null,keyboardStart=null;
 const $=id=>document.getElementById(id), cells=[];
 const rowLabel=y=>String.fromCharCode(65+y);
 const colorNumber=color=>color===WHITE?0:knownColors.findIndex(c=>c[1]===color)+1;
@@ -102,33 +107,95 @@ for(let y=0;y<ROWS;y++){
 }
 colors.forEach(([name,color],index)=>{
  const b=document.createElement('button');b.style.background=color;b.style.setProperty('--check',['黒','茶色','赤','深緑','青','紺','紫'].includes(name)?'#fff':'#223b34');b.textContent=index+1;b.title=`${index+1}：${name}`;b.setAttribute('aria-label',b.title);b.dataset.color=color;
- b.onclick=()=>{selected=[name,color];erasing=false;updateMode();};$('palette').append(b);
+ b.onclick=()=>{selected=[name,color];erasing=false;setTool('paint');};$('palette').append(b);
 });
 function updateMode(){
- $('palette').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',!erasing&&b.dataset.color===selected[1]));
- $('eraser').setAttribute('aria-pressed',erasing);
- $('mode').replaceChildren();const dot=document.createElement('span');dot.className='swatch-dot';dot.style.background=erasing?WHITE:selected[1];$('mode').append(dot,document.createTextNode(erasing?'けしゴムでけす':colorNumber(selected[1])+'：'+selected[0]+'でぬる'));
+ $('palette').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',tool==='paint'&&!erasing&&b.dataset.color===selected[1]));
+ $('eraser').setAttribute('aria-pressed',tool==='paint'&&erasing);
+ $('select-tool').setAttribute('aria-pressed',tool==='select');$('paste-area').setAttribute('aria-pressed',tool==='paste');
+ $('mode').replaceChildren();const dot=document.createElement('span');dot.className='swatch-dot';dot.style.background=erasing?WHITE:selected[1];$('mode').append(dot,document.createTextNode(tool==='select'?'コピーする範囲をえらぶ':tool==='paste'?'はりつける場所をえらぶ':erasing?'けしゴムでけす':colorNumber(selected[1])+'：'+selected[0]+'でぬる'));
 }
 function render(){
- pixels.forEach((color,i)=>{cells[i].style.backgroundColor=color;cells[i].classList.remove('preview');cells[i].setAttribute('aria-label',`${rowLabel(Math.floor(i/COLS))}行 ${i%COLS+1}列 ${color===WHITE?'白':knownColors.find(c=>c[1]===color)?.[0]||color}`);});
+ pixels.forEach((color,i)=>{cells[i].style.backgroundColor=color;cells[i].classList.remove('preview','area-selected','paste-preview','paste-invalid');cells[i].setAttribute('aria-selected','false');cells[i].setAttribute('aria-label',`${rowLabel(Math.floor(i/COLS))}行 ${i%COLS+1}列 ${color===WHITE?'白':knownColors.find(c=>c[1]===color)?.[0]||color}`);});
  $('undo').disabled=!history.length;$('redo').disabled=!future.length;
+ $('copy-area').disabled=!selection||tool!=='select'||!!drag;$('paste-area').disabled=!clipboard;
+ if(tool==='select'&&selection)markSelection(selection);
+ if(tool==='paste'&&pasteAt!==null&&clipboard)drawPastePreview();
 }
 function indices(a,b){const x1=Math.min(a%COLS,b%COLS),x2=Math.max(a%COLS,b%COLS),y1=Math.min(Math.floor(a/COLS),Math.floor(b/COLS)),y2=Math.max(Math.floor(a/COLS),Math.floor(b/COLS)),out=[];for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++)out.push(y*COLS+x);return out;}
 function commit(next){if(next.every((v,i)=>v===pixels[i]))return;history.push(pixels.slice());future=[];pixels=next;render();}
 function preview(){render();indices(drag.start,drag.end).forEach(i=>{cells[i].style.backgroundColor=drag.color;cells[i].classList.add('preview');});}
 function hit(e){const r=$('grid').getBoundingClientRect();const x=Math.max(0,Math.min(COLS-1,Math.floor((e.clientX-r.left)/r.width*COLS)));const y=Math.max(0,Math.min(ROWS-1,Math.floor((e.clientY-r.top)/r.height*ROWS)));return y*COLS+x;}
-$('grid').addEventListener('pointerdown',e=>{if(e.button!==0||drag)return;e.preventDefault();drag={id:e.pointerId,start:hit(e),end:hit(e),color:erasing?WHITE:selected[1]};$('grid').setPointerCapture(e.pointerId);preview();});
-$('grid').addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;e.preventDefault();drag.end=hit(e);preview();});
-$('grid').addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;drag.end=hit(e);const next=pixels.slice();indices(drag.start,drag.end).forEach(i=>next[i]=drag.color);drag=null;commit(next);render();if($('grid').hasPointerCapture(e.pointerId))$('grid').releasePointerCapture(e.pointerId);});
-function cancel(){if(drag){drag=null;render();}}
-$('grid').addEventListener('pointercancel',cancel);$('grid').addEventListener('lostpointercapture',cancel);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();});
+function setTool(next){
+ drag=null;keyboardStart=null;pasteAt=null;tool=next;selection=null;updateMode();render();
+ $('copy-help').textContent=next==='select'?'ドラッグでコピーする範囲をえらんで、「コピー」を押してね。':next==='paste'?'貼りたい場所の左上に合わせてクリック。何回でも貼れます。白も上書きします。「ぬるにもどる」で終了。':'模様をコピー：範囲をえらぶ → ドラッグ → コピー → はりつけ。白いマスも一緒にコピーします。';
+}
+function markSelection(area){indices(area.start,area.end).forEach(i=>{cells[i].classList.add('area-selected');cells[i].setAttribute('aria-selected','true');});}
+function copySelection(){
+ if(!selection||tool!=='select'||drag)return;
+ const x=Math.min(selection.start%COLS,selection.end%COLS),y=Math.min(Math.floor(selection.start/COLS),Math.floor(selection.end/COLS));
+ const width=Math.abs(selection.start%COLS-selection.end%COLS)+1,height=Math.abs(Math.floor(selection.start/COLS)-Math.floor(selection.end/COLS))+1;
+ clipboard={width,height,pixels:[]};
+ for(let row=0;row<height;row++)for(let col=0;col<width;col++)clipboard.pixels.push(pixels[(y+row)*COLS+x+col]);
+ render();$('copy-help').textContent=`よこ${width} × たて${height}マスをコピーしました。「はりつけ」を押してね。`;
+}
+function pasteFits(at){return clipboard&&at%COLS+clipboard.width<=COLS&&Math.floor(at/COLS)+clipboard.height<=ROWS;}
+function drawPastePreview(){
+ const x=pasteAt%COLS,y=Math.floor(pasteAt/COLS),valid=pasteFits(pasteAt);
+ for(let row=0;row<clipboard.height&&y+row<ROWS;row++)for(let col=0;col<clipboard.width&&x+col<COLS;col++){
+  const cell=cells[(y+row)*COLS+x+col];cell.style.backgroundColor=clipboard.pixels[row*clipboard.width+col];cell.classList.add('paste-preview');if(!valid)cell.classList.add('paste-invalid');
+ }
+ $('copy-help').textContent=valid?'この場所にクリックではりつけ。白も上書きします。「もどる」で取り消せます。':'はみ出しています。全体が入るように、左か上へ動かしてね。';
+}
+function pasteHere(at){
+ if(!clipboard||!pasteFits(at))return false;
+ const next=pixels.slice(),x=at%COLS,y=Math.floor(at/COLS);
+ for(let row=0;row<clipboard.height;row++)for(let col=0;col<clipboard.width;col++)next[(y+row)*COLS+x+col]=clipboard.pixels[row*clipboard.width+col];
+ pasteAt=null;commit(next);render();$('copy-help').textContent='はりつけました。続けて別の場所にも貼れます。「ぬるにもどる」で終了。';return true;
+}
+$('select-tool').onclick=()=>setTool('select');$('copy-area').onclick=copySelection;
+$('paste-area').onclick=()=>{if(clipboard)setTool('paste');};$('paint-tool').onclick=()=>{erasing=false;setTool('paint');};
+$('grid').addEventListener('pointerdown',e=>{
+ if(e.button!==0||drag)return;e.preventDefault();
+ const at=hit(e);cells.forEach(c=>c.tabIndex=-1);cells[at].tabIndex=0;cells[at].focus({preventScroll:true});
+ drag={id:e.pointerId,start:at,end:at,color:erasing?WHITE:selected[1],tool};$('grid').setPointerCapture(e.pointerId);
+ if(tool==='paint')preview();else if(tool==='select'){selection=null;render();markSelection(drag);}else{pasteAt=at;render();}
+});
+$('grid').addEventListener('pointermove',e=>{
+ if(drag&&drag.id!==e.pointerId)return;
+ if(tool==='paste'){pasteAt=hit(e);if(drag)drag.end=pasteAt;render();return;}
+ if(!drag)return;e.preventDefault();drag.end=hit(e);
+ if(tool==='paint')preview();else{render();markSelection(drag);}
+});
+$('grid').addEventListener('pointerup',e=>{
+ if(!drag||drag.id!==e.pointerId)return;drag.end=hit(e);const finished=drag;drag=null;
+ if(finished.tool==='paint'){const next=pixels.slice();indices(finished.start,finished.end).forEach(i=>next[i]=finished.color);commit(next);render();}
+ else if(finished.tool==='select'){selection={start:finished.start,end:finished.end};render();$('copy-help').textContent='範囲をえらびました。「コピー」を押してね。';}
+ else pasteHere(finished.end);
+ if($('grid').hasPointerCapture(e.pointerId))$('grid').releasePointerCapture(e.pointerId);
+});
+function cancel(){drag=null;keyboardStart=null;pasteAt=null;render();}
+$('grid').addEventListener('pointercancel',cancel);
+$('grid').addEventListener('lostpointercapture',()=>{if(drag)cancel();});
+$('grid').addEventListener('pointerleave',()=>{if(!drag){pasteAt=null;render();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancel();setTool('paint');}});
 $('grid').addEventListener('dragstart',e=>e.preventDefault());
-$('grid').addEventListener('keydown',e=>{const i=Number(e.target.dataset.index);if(!Number.isInteger(i))return;const offsets={ArrowLeft:-1,ArrowRight:1,ArrowUp:-COLS,ArrowDown:COLS};if(e.key in offsets){e.preventDefault();const n=Math.max(0,Math.min(pixels.length-1,i+offsets[e.key]));cells[i].tabIndex=-1;cells[n].tabIndex=0;cells[n].focus();}else if(e.key===' '||e.key==='Enter'){e.preventDefault();const next=pixels.slice();next[i]=erasing?WHITE:selected[1];commit(next);}});
-$('eraser').onclick=()=>{erasing=true;updateMode();};
-$('undo').onclick=()=>{if(!history.length)return;future.push(pixels.slice());pixels=history.pop();render();};
-$('redo').onclick=()=>{if(!future.length)return;history.push(pixels.slice());pixels=future.pop();render();};
-$('clear').onclick=()=>$('clear-dialog').showModal();$('do-clear').onclick=()=>{commit(Array(COLS*ROWS).fill(WHITE));$('clear-dialog').close();};
+$('grid').addEventListener('keydown',e=>{
+ const i=Number(e.target.dataset.index);if(!Number.isInteger(i))return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='c'&&selection){e.preventDefault();copySelection();return;}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='v'&&clipboard){e.preventDefault();setTool('paste');pasteAt=i;render();return;}
+ const offsets={ArrowLeft:-1,ArrowRight:1,ArrowUp:-COLS,ArrowDown:COLS};
+ if(e.key in offsets){e.preventDefault();const n=Math.max(0,Math.min(pixels.length-1,i+offsets[e.key]));cells[i].tabIndex=-1;cells[n].tabIndex=0;cells[n].focus();if(tool==='paste'){pasteAt=n;render();}else if(tool==='select'&&keyboardStart!==null){selection={start:keyboardStart,end:n};render();}}
+ else if(e.key===' '||e.key==='Enter'){
+  e.preventDefault();if(tool==='paste'){pasteHere(i);return;}
+  if(tool==='select'){if(keyboardStart===null){keyboardStart=i;selection={start:i,end:i};}else{selection={start:keyboardStart,end:i};keyboardStart=null;}render();return;}
+  const next=pixels.slice();next[i]=erasing?WHITE:selected[1];commit(next);
+ }
+});
+$('eraser').onclick=()=>{erasing=true;setTool('paint');};
+$('undo').onclick=()=>{cancel();if(!history.length)return;future.push(pixels.slice());pixels=history.pop();render();};
+$('redo').onclick=()=>{cancel();if(!future.length)return;history.push(pixels.slice());pixels=future.pop();render();};
+$('clear').onclick=()=>$('clear-dialog').showModal();$('do-clear').onclick=()=>{setTool('paint');commit(Array(COLS*ROWS).fill(WHITE));$('clear-dialog').close();};
 function artwork(lines,numbers=false){
  const canvas=document.createElement('canvas');canvas.width=3000;canvas.height=1000;const ctx=canvas.getContext('2d');ctx.fillStyle=WHITE;ctx.fillRect(0,0,3000,1000);
  pixels.forEach((color,i)=>{
@@ -234,7 +301,7 @@ $('project-file').addEventListener('change',async e=>{
   if(file.size>1000000)throw new Error('ファイルが大きすぎます。作品のJSONファイルをえらんでね。');
   const next=parseProject(await file.text());
   if(isUnsaved()&&!confirm('まだ保存していない絵があります。別の作品をひらきますか？\n残したいときは「キャンセル」を押して、先に「作品をほぞん」してください。'))return;
-  cancel();commit(next);savedState=JSON.stringify(pixels);
+  setTool('paint');commit(next);savedState=JSON.stringify(pixels);
   fileStatus(`「${file.name}」をひらきました。つづきを描けるよ。`);
  }catch(error){fileStatus(error instanceof SyntaxError?'作品ファイルを読めませんでした。JPEGではなく、保存したJSONファイルをえらんでね。':error.message,true);}
  finally{input.value='';}
