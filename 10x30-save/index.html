@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>へきが ドットえメーカー｜つづき保存・色番号版</title><style>
+:root{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;color:#263c43;background:#f4f7f6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main{max-width:1240px;margin:auto;padding:0 28px}header{padding-top:30px;padding-bottom:22px}.badge{font-size:12px;font-weight:700;color:#397569;letter-spacing:.08em}h1{font-size:30px;letter-spacing:.03em;margin:10px 0}h1 span{color:#217363}header p{font-size:16px;margin:12px 0 0;color:#536866}h2{font-size:17px;margin:0}button{font:inherit;font-weight:700;min-height:46px;padding:10px 19px;border:1px solid #bdceca;border-radius:10px;background:white;color:#29483f;cursor:pointer}button:hover:not(:disabled){background:#e9f3ee}button:focus-visible,input:focus-visible{outline:3px solid #235bdf;outline-offset:3px}button:disabled{opacity:.38;cursor:default}.primary{background:#217363;color:white;border-color:#217363}.primary:hover:not(:disabled){background:#185749}.tools,.drawing,.output{background:white;border:1px solid #dce5e1;border-radius:16px;padding:22px;margin-bottom:20px}.palette-heading,.drawing-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}#mode{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}.swatch-dot{width:20px;height:20px;border:1px solid #9daaa5;border-radius:50%;display:inline-block}#palette{display:flex;gap:10px;flex-wrap:wrap}#palette button{width:44px;min-height:44px;padding:0;border-radius:50%;border:1px solid #bcc6c2;position:relative}#palette button[aria-pressed=true]{outline:3px solid #263c43;outline-offset:3px}#palette button[aria-pressed=true]:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;font-size:23px;color:var(--check)}.toolbar{display:flex;gap:10px;align-items:center;margin-top:22px;flex-wrap:wrap}.separator{height:28px;width:1px;background:#dce5e1;margin:0 6px}#eraser[aria-pressed=true]{background:#e1f0e9;border:2px solid #217363}.quiet{margin-left:auto;color:#6b7774}.drawing-heading span,.caption{font-size:13px;color:#60766e}#grid{display:grid;grid-template-rows:repeat(10,1fr);width:100%;aspect-ratio:3/1;outline:2px solid #425d55;background:#fff;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}#grid [role=row]{display:grid;grid-template-columns:repeat(30,minmax(0,1fr));min-height:0}#grid [role=gridcell]{min-width:0;min-height:0;box-shadow:inset -1px -1px #a5b2ac}#grid [role=gridcell].preview{outline:2px solid #1b5343;outline-offset:-2px;filter:brightness(.91)}#grid [role=gridcell]:focus-visible{outline:3px solid #235bdf;outline-offset:-3px;z-index:1}.caption{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.hint{font-size:14px;margin:19px 0 0;color:#42685b}.output{display:flex;align-items:center;justify-content:space-between;gap:20px}.output p{font-size:13px;color:#637970;margin:8px 0 0}.output-actions{display:flex;gap:12px;flex-wrap:wrap}.notice{text-align:center;font-size:13px;color:#697d74;margin:20px 0 30px}dialog{border:1px solid #c9d8d0;border-radius:18px;padding:28px;max-width:min(520px,calc(100% - 32px));color:#263c43}dialog::backdrop{background:#142a2470}dialog p,dialog li{line-height:1.8}dialog label{display:block;padding:10px;font-size:18px}input{accent-color:#217363}.small{font-size:13px;color:#64786e}.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}#print-sheet{display:none}@media(max-width:700px){header,main{padding-left:14px;padding-right:14px}h1{font-size:23px}.tools,.drawing,.output{padding:16px}.output{align-items:flex-start;flex-direction:column}.caption{font-size:11px}.palette-heading{align-items:flex-start;flex-direction:column}.drawing-heading span{font-size:11px}#palette{gap:12px}.quiet{margin-left:0}}
+@page{size:364mm 257mm;margin:0}@media print{html,body{margin:0!important;padding:0!important;width:364mm;height:257mm;background:white}body>*{display:none!important}body>#print-sheet{display:flex!important;width:364mm;height:257mm;align-items:center;justify-content:center;break-inside:avoid}#print-image{display:block;width:310mm!important;height:110mm!important;max-width:none;object-fit:fill;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+#numbered-grid{position:relative;padding:24px;user-select:none;-webkit-user-select:none}
+.axis{position:absolute;display:grid;min-width:0;min-height:0;color:#334f44;font:600 clamp(6px,1vw,12px)/1 Arial,sans-serif;font-variant-numeric:tabular-nums;pointer-events:none}
+.axis span{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.horizontal{left:24px;right:24px;height:24px;grid-template-columns:repeat(30,minmax(0,1fr))}
+.vertical{top:24px;bottom:24px;width:24px;grid-template-rows:repeat(10,minmax(0,1fr))}
+#axis-top{top:0}#axis-bottom{bottom:0}#axis-left{left:0}#axis-right{right:0}
+
+
+#palette button{color:var(--check);font-size:18px}
+#palette button[aria-pressed=true]:after{content:'';inset:-6px;border:2px solid #217363;border-radius:50%;pointer-events:none}
+.file-tools{background:#edf6f1;border:1px solid #cbded2;border-radius:16px;padding:20px 22px;margin-bottom:20px}
+.file-tools h2{margin-bottom:12px}.file-tools p{font-size:14px;line-height:1.7;margin:12px 0 0}
+#file-status{font-size:14px;min-height:1.5em;color:#315a4b}#file-status.error{color:#a32626}
+.original-link{font-size:13px;color:#397569;display:inline-block;margin-top:12px}
+#print-preview{width:100%;height:auto;border:1px solid #dce5e1;margin-top:12px}
+#print-legend{display:none}
+@media print{
+ #print-sheet{position:relative}
+ #print-sheet.numbers #print-legend{display:block;position:absolute;top:190mm;left:32mm;width:300mm;color:#000;font:10pt sans-serif}
+ #print-legend h2{font-size:11pt;margin:0 0 3mm}
+ #print-legend-items{display:grid;grid-template-columns:repeat(10,1fr);gap:3mm 1mm}
+ .legend-item{display:flex;align-items:center;gap:1mm;font-size:8pt;white-space:nowrap}
+ .legend-chip{width:4mm;height:4mm;flex:none;border:.2mm solid #555;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header><span class="badge">つづき保存・色番号版｜20色・よこ30 × たて10マス</span><h1>へきが <span>ドットえメーカー</span></h1><p>①いろをえらぶ → ②マスをぬる → ③ほぞんする</p><a class="original-link" href="../">もとのアプリをひらく</a></header>
+<main>
+<section class="file-tools" aria-label="作品の保存と読み込み">
+<h2>つづきから描けるように、作品をほぞんしよう</h2>
+<div class="output-actions"><button id="save-project" class="primary">↓ 作品をほぞん</button><button id="load-project">↑ つづきから（作品をひらく）</button></div>
+<input id="project-file" type="file" accept=".json,application/json" hidden>
+<p>「作品をほぞん」でファイルをダウンロード。次は「つづきから」で、そのファイルをえらんでね。別のパソコンでもつづきを描けます。</p>
+<p id="file-status" role="status" aria-live="polite">作品ファイルは、このパソコンに保存します。</p>
+</section>
+<section class="tools" aria-label="えをかくどうぐ">
+<div class="palette-heading"><h2>いろをえらぼう</h2><div id="mode" role="status" aria-live="polite"></div></div>
+<div id="palette" aria-label="いろパレット"></div>
+<div class="toolbar"><button id="eraser" aria-pressed="false">けしゴム</button><span class="separator"></span><button id="undo" disabled>↶ もどる</button><button id="redo" disabled>↷ すすむ</button><button id="clear" class="quiet">ぜんぶけす</button></div>
+</section>
+<section class="drawing" aria-label="さくひん">
+<div class="drawing-heading"><h2>きみのキャンバス</h2><span>よこ30マス × たて10マス</span></div>
+<div id="numbered-grid">
+<div id="axis-top" class="axis horizontal" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span></div>
+<div id="axis-left" class="axis vertical" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div>
+<div id="grid" role="grid" aria-label="へきがの下絵、10行30列" aria-rowcount="10" aria-colcount="30"></div>
+<div id="axis-right" class="axis vertical" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div>
+<div id="axis-bottom" class="axis horizontal" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span></div>
+</div>
+<div class="caption"><span>1マス ＝ かべの10cm角</span><span>かべの大きさ：よこ300cm × たて100cm</span></div>
+<p class="hint">クリックで1マス。おしたまま動かすと、しかくくまとめてぬれるよ。</p>
+</section>
+<section class="output"><div><h2>画像・ぬり方の表をつくろう</h2><p>JPEGは見るための画像。つづきを描くには「作品をほぞん」を使ってね。</p></div><div class="output-actions"><button id="save" class="primary">↓ JPEGでほぞん</button><button id="print">B4でいんさつ</button><button id="print-numbers">色番号でいんさつ</button></div></section>
+<p class="notice">とじる前に「作品をほぞん」。ダウンロードした作品ファイルを大切にとっておこう。</p>
+</main>
+<dialog id="save-dialog"><form method="dialog"><h2>JPEGでほぞん</h2><p>ほぞんする画像の方眼線をえらんでね。</p><label><input type="radio" name="lines" value="yes" checked> 方眼線あり</label><label><input type="radio" name="lines" value="no"> 方眼線なし</label><p class="small">よこ3000 × たて1000ピクセルで、作品のまわりの番号もほぞんします。</p><div class="dialog-actions"><button value="cancel">やめる</button><button id="download" type="button" class="primary">ほぞんする</button></div></form></dialog>
+<dialog id="print-dialog"><form method="dialog"><h2>B4でいんさつ</h2>
+<label><input type="radio" name="print-mode" value="color" checked> 色のついた下絵</label>
+<label><input type="radio" name="print-mode" value="numbers"> 白いマスに色番号（色の対応表つき）</label>
+<p class="small">白も「1」で表示します。縦はA〜J、横は1〜30です。</p>
+<img id="print-preview" alt="印刷する下絵のプレビュー">
+<p>先生といっしょに、印刷の設定をたしかめよう。</p><ul><li>用紙：日本のB4（364mm × 257mm）</li><li>向き：横向き</li><li>倍率：100％（用紙に合わせない）</li><li>ヘッダーとフッター：なし</li></ul><p>下絵はよこ300mm × たて100mm。<br>1マスは10mm角、かべの1/10の大きさです。番号は下絵の外側に印刷します。</p><p class="small">正しい大きさで印刷するときは、JPEGではなく、このボタンを使ってね。印刷後に定規でもたしかめてください。</p><div class="dialog-actions"><button value="cancel">やめる</button><button id="do-print" type="button" class="primary">いんさつへすすむ</button></div></form></dialog>
+<dialog id="clear-dialog"><form method="dialog"><h2>ぜんぶけしてもいい？</h2><p>すべてのマスを白にもどします。</p><div class="dialog-actions"><button value="cancel" autofocus>やめる</button><button id="do-clear" type="button">ぜんぶけす</button></div></form></dialog>
+<div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+<div id="print-sheet" aria-hidden="true"><img id="print-image" alt="へきがの下絵"><div id="print-legend"><h2>色番号と色の対応表（白は1）</h2><div id="print-legend-items"></div></div></div>
+<script>
+'use strict';
+const COLS=30, ROWS=10, WHITE='#ffffff';
+const colors=[['白','#ffffff'],['黒','#252b32'],['灰色','#8b949e'],['茶色','#885334'],['赤','#e84444'],['オレンジ','#f38b32'],['黄色','#ffdc45'],['クリーム','#fff0a6'],['黄緑','#a7d948'],['緑','#3da55b'],['深緑','#22755c'],['水色','#7dd9ed'],['空色','#42a5e5'],['青','#3669d6'],['紺','#34417e'],['紫','#8a60c7'],['うす紫','#c7abea'],['ピンク','#ef8db6'],['もも色','#ffd1bd'],['ベージュ','#d8ba8d']];
+let pixels=Array(COLS*ROWS).fill(WHITE), selected=colors[4], erasing=false, history=[], future=[], drag=null;
+const $=id=>document.getElementById(id), cells=[];
+const rowLabel=y=>String.fromCharCode(65+y);
+const colorNumber=color=>colors.findIndex(c=>c[1]===color)+1;
+let savedState=JSON.stringify(pixels);
+const isUnsaved=()=>JSON.stringify(pixels)!==savedState;
+for(let y=0;y<ROWS;y++){
+ const row=document.createElement('div');row.setAttribute('role','row');row.setAttribute('aria-rowindex',y+1);
+ for(let x=0;x<COLS;x++){
+  const cell=document.createElement('div'),i=y*COLS+x;
+  cell.setAttribute('role','gridcell');cell.setAttribute('aria-colindex',x+1);cell.dataset.index=i;cell.tabIndex=i===0?0:-1;
+  row.append(cell);cells.push(cell);
+ }
+ $('grid').append(row);
+}
+colors.forEach(([name,color],index)=>{
+ const b=document.createElement('button');b.style.background=color;b.style.setProperty('--check',['黒','茶色','赤','深緑','青','紺','紫'].includes(name)?'#fff':'#223b34');b.textContent=index+1;b.title=`${index+1}：${name}`;b.setAttribute('aria-label',b.title);b.dataset.color=color;
+ b.onclick=()=>{selected=[name,color];erasing=false;updateMode();};$('palette').append(b);
+});
+function updateMode(){
+ $('palette').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',!erasing&&b.dataset.color===selected[1]));
+ $('eraser').setAttribute('aria-pressed',erasing);
+ $('mode').replaceChildren();const dot=document.createElement('span');dot.className='swatch-dot';dot.style.background=erasing?WHITE:selected[1];$('mode').append(dot,document.createTextNode(erasing?'けしゴムでけす':colorNumber(selected[1])+'：'+selected[0]+'でぬる'));
+}
+function render(){
+ pixels.forEach((color,i)=>{cells[i].style.backgroundColor=color;cells[i].classList.remove('preview');cells[i].setAttribute('aria-label',`${rowLabel(Math.floor(i/COLS))}行 ${i%COLS+1}列 ${colors.find(c=>c[1]===color)?.[0]||color}`);});
+ $('undo').disabled=!history.length;$('redo').disabled=!future.length;
+}
+function indices(a,b){const x1=Math.min(a%COLS,b%COLS),x2=Math.max(a%COLS,b%COLS),y1=Math.min(Math.floor(a/COLS),Math.floor(b/COLS)),y2=Math.max(Math.floor(a/COLS),Math.floor(b/COLS)),out=[];for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++)out.push(y*COLS+x);return out;}
+function commit(next){if(next.every((v,i)=>v===pixels[i]))return;history.push(pixels.slice());future=[];pixels=next;render();}
+function preview(){render();indices(drag.start,drag.end).forEach(i=>{cells[i].style.backgroundColor=drag.color;cells[i].classList.add('preview');});}
+function hit(e){const r=$('grid').getBoundingClientRect();const x=Math.max(0,Math.min(COLS-1,Math.floor((e.clientX-r.left)/r.width*COLS)));const y=Math.max(0,Math.min(ROWS-1,Math.floor((e.clientY-r.top)/r.height*ROWS)));return y*COLS+x;}
+$('grid').addEventListener('pointerdown',e=>{if(e.button!==0||drag)return;e.preventDefault();drag={id:e.pointerId,start:hit(e),end:hit(e),color:erasing?WHITE:selected[1]};$('grid').setPointerCapture(e.pointerId);preview();});
+$('grid').addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;e.preventDefault();drag.end=hit(e);preview();});
+$('grid').addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;drag.end=hit(e);const next=pixels.slice();indices(drag.start,drag.end).forEach(i=>next[i]=drag.color);drag=null;commit(next);render();if($('grid').hasPointerCapture(e.pointerId))$('grid').releasePointerCapture(e.pointerId);});
+function cancel(){if(drag){drag=null;render();}}
+$('grid').addEventListener('pointercancel',cancel);$('grid').addEventListener('lostpointercapture',cancel);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();});
+$('grid').addEventListener('dragstart',e=>e.preventDefault());
+$('grid').addEventListener('keydown',e=>{const i=Number(e.target.dataset.index);if(!Number.isInteger(i))return;const offsets={ArrowLeft:-1,ArrowRight:1,ArrowUp:-COLS,ArrowDown:COLS};if(e.key in offsets){e.preventDefault();const n=Math.max(0,Math.min(pixels.length-1,i+offsets[e.key]));cells[i].tabIndex=-1;cells[n].tabIndex=0;cells[n].focus();}else if(e.key===' '||e.key==='Enter'){e.preventDefault();const next=pixels.slice();next[i]=erasing?WHITE:selected[1];commit(next);}});
+$('eraser').onclick=()=>{erasing=true;updateMode();};
+$('undo').onclick=()=>{if(!history.length)return;future.push(pixels.slice());pixels=history.pop();render();};
+$('redo').onclick=()=>{if(!future.length)return;history.push(pixels.slice());pixels=future.pop();render();};
+$('clear').onclick=()=>$('clear-dialog').showModal();$('do-clear').onclick=()=>{commit(Array(COLS*ROWS).fill(WHITE));$('clear-dialog').close();};
+function artwork(lines,numbers=false){
+ const canvas=document.createElement('canvas');canvas.width=3000;canvas.height=1000;const ctx=canvas.getContext('2d');ctx.fillStyle=WHITE;ctx.fillRect(0,0,3000,1000);
+ pixels.forEach((color,i)=>{
+  const x=i%COLS*100,y=Math.floor(i/COLS)*100;
+  if(numbers){ctx.fillStyle='#111';ctx.font='600 40px Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(colorNumber(color),x+50,y+50);}
+  else{ctx.fillStyle=color;ctx.fillRect(x,y,100,100);}
+ });
+ if(lines){ctx.strokeStyle='#65756d';ctx.lineWidth=2;ctx.beginPath();for(let x=1;x<COLS;x++){ctx.moveTo(x*100,0);ctx.lineTo(x*100,1000);}for(let y=1;y<ROWS;y++){ctx.moveTo(0,y*100);ctx.lineTo(3000,y*100);}ctx.stroke();}
+ ctx.strokeStyle='#273e34';ctx.lineWidth=4;ctx.strokeRect(2,2,2996,996);return canvas;
+}
+// JPEG keeps its 3000×1000 size; print keeps the artwork itself at 300×100 mm.
+function numberedArtwork(lines,forPrint=false,numbers=false){
+ const canvas=document.createElement('canvas');
+ canvas.width=forPrint?3100:3000;canvas.height=forPrint?1100:1000;
+ const ctx=canvas.getContext('2d');ctx.fillStyle=WHITE;ctx.fillRect(0,0,canvas.width,canvas.height);
+ const width=forPrint?3000:2700,height=width/3;
+ const left=(canvas.width-width)/2,top=(canvas.height-height)/2;
+ ctx.imageSmoothingEnabled=false;ctx.drawImage(artwork(lines,numbers),left,top,width,height);
+ ctx.fillStyle='#273e34';ctx.font=`600 ${forPrint?30:26}px Arial, sans-serif`;
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ for(let x=0;x<COLS;x++){
+  const center=left+(x+.5)*width/COLS;
+  ctx.fillText(x+1,center,top-25);ctx.fillText(x+1,center,top+height+25);
+ }
+ for(let y=0;y<ROWS;y++){
+  const center=top+(y+.5)*height/ROWS;
+  ctx.fillText(rowLabel(y),left-25,center);ctx.fillText(rowLabel(y),left+width+25,center);
+ }
+ return canvas;
+}
+$('save').onclick=()=>$('save-dialog').showModal();
+$('download').onclick=()=>{const lines=document.querySelector('input[name=lines]:checked').value==='yes';numberedArtwork(lines).toBlob(blob=>{if(!blob){$('announcement').textContent='ほぞんできませんでした。もういちどためしてね。';return;}const url=URL.createObjectURL(blob),a=document.createElement('a');const now=new Date(),date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;a.href=url;a.download=`へきがの下絵_${date}_${lines?'方眼あり':'方眼なし'}.jpg`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);$('save-dialog').close();$('announcement').textContent='画像をほぞんしました。';},'image/jpeg',0.96);};
+function printNumbers(){return document.querySelector('input[name="print-mode"]:checked').value==='numbers';}
+function preparePrint(){
+ const numbers=printNumbers();
+ $('print-image').src=numberedArtwork(true,true,numbers).toDataURL('image/png');
+ $('print-sheet').classList.toggle('numbers',numbers);
+}
+function refreshPrintPreview(){preparePrint();$('print-preview').src=$('print-image').src;}
+colors.forEach(([name,color],index)=>{
+ const item=document.createElement('div');item.className='legend-item';
+ const chip=document.createElement('span');chip.className='legend-chip';chip.style.backgroundColor=color;
+ item.append(chip,document.createTextNode(`${index+1} ${name}`));$('print-legend-items').append(item);
+});
+window.addEventListener('beforeprint',preparePrint);
+function openPrint(numbers){
+ document.querySelector(`input[name="print-mode"][value="${numbers?'numbers':'color'}"]`).checked=true;
+ refreshPrintPreview();$('print-dialog').showModal();
+}
+document.querySelectorAll('input[name="print-mode"]').forEach(input=>input.addEventListener('change',refreshPrintPreview));
+$('print').onclick=()=>openPrint(false);$('print-numbers').onclick=()=>openPrint(true);
+$('do-print').onclick=async()=>{
+ try{preparePrint();await $('print-image').decode();$('print-dialog').close();window.print();}
+ catch{alert('印刷の準備ができませんでした。もういちどためしてね。');}
+};
+function fileStatus(message,error=false){$('file-status').textContent=message;$('file-status').classList.toggle('error',error);}
+function projectData(){return {format:'hekiga-dot-project',version:1,cols:COLS,rows:ROWS,palette:colors,pixels:pixels.slice()};}
+function parseProject(text){
+ const data=JSON.parse(text);
+ if(!data||data.format!=='hekiga-dot-project'||data.version!==1||data.cols!==COLS||data.rows!==ROWS)
+  throw new Error('この10×30マス版で保存した作品ファイルをえらんでください。');
+ if(JSON.stringify(data.palette)!==JSON.stringify(colors))
+  throw new Error('色パレットがちがう作品ファイルです。保存したアプリでひらいてください。');
+ if(!Array.isArray(data.pixels)||data.pixels.length!==COLS*ROWS||!data.pixels.every(c=>typeof c==='string'&&colorNumber(c)>0))
+  throw new Error('作品ファイルの色やマスのデータが正しくありません。');
+ return data.pixels.slice();
+}
+$('save-project').onclick=()=>{
+ cancel();
+ try{
+  const blob=new Blob([JSON.stringify(projectData(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a'),now=new Date();
+  const stamp=[now.getFullYear(),now.getMonth()+1,now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join('-');
+  a.href=url;a.download=`へきが作品_10x30_${stamp}.json`;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);savedState=JSON.stringify(pixels);
+  fileStatus('作品ファイルをダウンロードしました。保存先をたしかめてね。次は「つづきから」でひらけます。');
+ }catch{fileStatus('ほぞんできませんでした。もういちどためしてね。',true);}
+};
+$('load-project').onclick=()=>{$('project-file').value='';$('project-file').click();};
+$('project-file').addEventListener('change',async e=>{
+ const input=e.currentTarget,file=input.files[0];if(!file)return;
+ try{
+  if(file.size>1000000)throw new Error('ファイルが大きすぎます。作品のJSONファイルをえらんでね。');
+  const next=parseProject(await file.text());
+  if(isUnsaved()&&!confirm('まだ保存していない絵があります。別の作品をひらきますか？\n残したいときは「キャンセル」を押して、先に「作品をほぞん」してください。'))return;
+  cancel();commit(next);savedState=JSON.stringify(pixels);
+  fileStatus(`「${file.name}」をひらきました。つづきを描けるよ。`);
+ }catch(error){fileStatus(error instanceof SyntaxError?'作品ファイルを読めませんでした。JPEGではなく、保存したJSONファイルをえらんでね。':error.message,true);}
+ finally{input.value='';}
+});
+window.addEventListener('beforeunload',e=>{if(isUnsaved()){e.preventDefault();e.returnValue='';}});
+updateMode();render();
+
+</script>
+</body></html>
